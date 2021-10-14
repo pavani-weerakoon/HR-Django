@@ -24,6 +24,9 @@ class Job(models.Model):
         Company,
         on_delete=models.CASCADE,
     )
+    salary = models.IntegerField(
+        null=True
+    )
 
 
 class Section(models.Model):
@@ -47,6 +50,9 @@ class Question(models.Model):
 
 
 class Candidate(models.Model):
+    cv = models.FilePathField(
+        null=True, blank=True
+    )
     job = models.ForeignKey(
         Job,
         on_delete=models.CASCADE,
