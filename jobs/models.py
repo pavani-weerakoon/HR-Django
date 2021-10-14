@@ -20,12 +20,12 @@ class Job(models.Model):
     role = models.CharField(
         max_length=200,
     )
-    company = models.ForeignKey(
-        Company,
-        on_delete=models.CASCADE,
-    )
     salary = models.IntegerField(
         null=True
+    )
+    company = models.ForeignKey(
+        Company,  related_name='jobs',
+        on_delete=models.CASCADE,
     )
 
 
@@ -40,12 +40,12 @@ class Question(models.Model):
         max_length=200,
     )
     section = models.ForeignKey(
-        Section,
+        Section,  related_name='questions',
         on_delete=models.CASCADE,
     )
-    job = models.ForeignKey(
-        Job,
-        on_delete=models.CASCADE,
+    job = models.ManyToManyField(
+        Job, related_name='questions',
+
     )
 
 
@@ -53,12 +53,12 @@ class Candidate(models.Model):
     cv = models.FilePathField(
         null=True, blank=True
     )
-    job = models.ForeignKey(
-        Job,
-        on_delete=models.CASCADE,
+    job = models.ManyToManyField(
+        Job, related_name='candidates'
+
     )
     company = models.ForeignKey(
-        Company,
+        Company,  related_name='candidates',
         on_delete=models.CASCADE,
     )
 
@@ -78,7 +78,7 @@ class User(models.Models):
         null=True
     )
     company = models.ForeignKey(
-        Company,
+        Company, related_name='users',
         on_delete=models.CASCADE,
     )
 
@@ -88,14 +88,14 @@ class Interviewer(models.Model):
         max_length=200,
     )
     company = models.ForeignKey(
-        Company,
+        Company,  related_name='interviewers',
         on_delete=models.CASCADE,
     )
 
 
 class Interview(models.Models):
     interviewer = models.ForeignKey(
-        Interviewer,
+        Interviewer, related_name='interviews',
         on_delete=models.CASCADE,
     )
 
@@ -111,7 +111,7 @@ class Experience(models.Models):
         max_length=200,
     )
     Candidate = models.ForeignKey(
-        Candidate,
+        Candidate, related_name='experiences',
         on_delete=models.CASCADE,
     )
 
