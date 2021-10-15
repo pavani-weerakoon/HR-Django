@@ -63,7 +63,7 @@ class Candidate(models.Model):
     )
 
 
-class User(models.Models):
+class User(models.Model):
     first_name = models.CharField(
         max_length=200,
     )
@@ -93,14 +93,14 @@ class Interviewer(models.Model):
     )
 
 
-class Interview(models.Models):
+class Interview(models.Model):
     interviewer = models.ForeignKey(
         Interviewer, related_name='interviews',
         on_delete=models.CASCADE,
     )
 
 
-class Experience(models.Models):
+class Experience(models.Model):
     role = models.CharField(
         max_length=200,
     )
