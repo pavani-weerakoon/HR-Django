@@ -26,6 +26,8 @@ class Company(models.Model):
 
 
 class User(AbstractUser):
+    class Meta:
+        abstract = True
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(
         max_length=200,
