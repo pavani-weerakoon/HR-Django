@@ -1,10 +1,13 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+import uuid
+from django.conf import settings
 
 # Create your models here.
 
 
 class Company(models.Model):
-    company = models.CharField(
+    company_name = models.CharField(
         max_length=200,
     )
     location = models.CharField(
@@ -13,6 +16,33 @@ class Company(models.Model):
     company_email = models.EmailField(
         max_length=200,
         blank=True, null=True
+    )
+    owner = models.OneToOneField(
+        "jobs.User", related_name='managing_company',
+        on_delete=models.CASCADE,
+        max_length=200,
+        blank=True, null=True
+    )
+
+
+class User(AbstractUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    first_name = models.CharField(
+        max_length=200,
+    )
+    last_name = models.CharField(
+        max_length=200,
+    )
+    email = models.EmailField(
+        max_length=200,
+        blank=True, null=True
+    )
+    contact_number = models.IntegerField(
+        null=True
+    )
+    company = models.ForeignKey(
+        Company, related_name='company_user',
+        on_delete=models.CASCADE,
     )
 
 
@@ -49,7 +79,7 @@ class Question(models.Model):
     )
 
 
-class Candidate(models.Model):
+class Candidate(User):
     cv = models.FilePathField(
         null=True, blank=True
     )
@@ -57,45 +87,21 @@ class Candidate(models.Model):
         Job, related_name='candidates'
 
     )
-    company = models.ForeignKey(
-        Company,  related_name='candidates',
-        on_delete=models.CASCADE,
-    )
 
 
-class User(models.Model):
-    first_name = models.CharField(
-        max_length=200,
-    )
-    last_name = models.CharField(
-        max_length=200,
-    )
-    email = models.EmailField(
-        max_length=200,
-        blank=True, null=True
-    )
-    contact_number = models.IntegerField(
-        null=True
-    )
-    company = models.ForeignKey(
-        Company, related_name='users',
-        on_delete=models.CASCADE,
-    )
-
-
-class Interviewer(models.Model):
+class Interviewer(User):
     role = models.CharField(
         max_length=200,
-    )
-    company = models.ForeignKey(
-        Company,  related_name='interviewers',
-        on_delete=models.CASCADE,
     )
 
 
 class Interview(models.Model):
     interviewer = models.ForeignKey(
         Interviewer, related_name='interviews',
+        on_delete=models.CASCADE,
+    )
+    candidate = models.ForeignKey(
+        Interviewer, related_name='candidates',
         on_delete=models.CASCADE,
     )
 
@@ -116,7 +122,7 @@ class Experience(models.Model):
     )
 
 
-class Admin(models.Model):
+class Admin(User):
     admin_role = models.CharField(
         max_length=200,
     )
