@@ -21,13 +21,19 @@ class Company(models.Model):
         "jobs.User", related_name='managing_company',
         on_delete=models.CASCADE,
         max_length=200,
-        blank=True, null=True
+
     )
 
 
 class User(AbstractUser):
-    class Meta:
-        abstract = True
+    CANDIDATE = 'CA',
+    INTERVIEWER = 'IN',
+    ADMIN = 'AD',
+    TYPES_OF_USERS = [
+        (CANDIDATE, 'Candidate'),
+        (INTERVIEWER, 'Interviewer'),
+        (ADMIN, 'Admin'),
+    ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(
         max_length=200,
@@ -46,6 +52,7 @@ class User(AbstractUser):
         Company, related_name='company_user',
         on_delete=models.CASCADE,
     )
+    choices = TYPES_OF_USERS
 
 
 class Job(models.Model):
@@ -75,25 +82,37 @@ class Question(models.Model):
         Section,  related_name='questions',
         on_delete=models.CASCADE,
     )
-    job = models.ManyToManyField(
+    job = models.ForeignKey(
         Job, related_name='questions',
-
+        on_delete=models.CASCADE,
     )
 
 
-class Candidate(User):
+class Candidate(models.Model):
     cv = models.FilePathField(
         null=True, blank=True
     )
-    job = models.ManyToManyField(
+    jobs = models.ManyToManyField(
         Job, related_name='candidates'
+
+    )
+    user = models.OneToOneField(
+        User, related_name='candidates',
+        on_delete=models.CASCADE,
+        max_length=200,
 
     )
 
 
-class Interviewer(User):
+class Interviewer(models.Model):
     role = models.CharField(
         max_length=200,
+    )
+    user = models.OneToOneField(
+        User, related_name='Interviewers',
+        on_delete=models.CASCADE,
+        max_length=200,
+
     )
 
 
@@ -103,7 +122,7 @@ class Interview(models.Model):
         on_delete=models.CASCADE,
     )
     candidate = models.ForeignKey(
-        Interviewer, related_name='candidates',
+        Interviewer, related_name='interviews',
         on_delete=models.CASCADE,
     )
 
@@ -124,7 +143,13 @@ class Experience(models.Model):
     )
 
 
-class Admin(User):
+class Admin(models.Model):
     admin_role = models.CharField(
         max_length=200,
+    )
+    user = models.OneToOneField(
+        User, related_name='company_admin',
+        on_delete=models.CASCADE,
+        max_length=200,
+
     )
