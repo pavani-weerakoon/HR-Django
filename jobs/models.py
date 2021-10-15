@@ -26,10 +26,10 @@ class Company(models.Model):
 
 
 class User(AbstractUser):
-    CANDIDATE = 'CA',
-    INTERVIEWER = 'IN',
-    ADMIN = 'AD',
-    TYPES_OF_USERS = [
+    CANDIDATE = 'CANDIDATE',
+    INTERVIEWER = 'INTERVIEW',
+    ADMIN = 'ADMIN',
+    USER_TYPE = [
         (CANDIDATE, 'Candidate'),
         (INTERVIEWER, 'Interviewer'),
         (ADMIN, 'Admin'),
@@ -52,7 +52,10 @@ class User(AbstractUser):
         Company, related_name='company_user',
         on_delete=models.CASCADE,
     )
-    choices = TYPES_OF_USERS
+    user_type = models.CharField(
+        max_length=100,
+        choices=USER_TYPE,
+    )
 
 
 class Job(models.Model):
